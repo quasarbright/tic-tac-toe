@@ -2,7 +2,8 @@
 
 (module+ test (require rackunit))
 (provide referee<%>
-         referee%)
+         referee%
+         naive-player%)
 
 (require racket/sandbox
          "./player.rkt"
