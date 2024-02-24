@@ -15,13 +15,13 @@
  O_WIN
  INITIAL-GAME
  position-valid?
- game-done?
- game-get-cell
- game-make-move
- game-move-is-legal?
- game-done?
- game-status
- game-get-winner)
+ (contract-out
+  [game-done? (-> game? any/c)]
+  [game-get-cell (-> game? position? cell?)]
+  [game-make-move (-> game? move? (or/c #f game?))]
+  [game-move-is-legal? (-> game? move? any/c)]
+  [game-status (-> game? game-status/c)]
+  [game-get-winner (-> game (or/c #f player-name?))]))
 
 ; A Game is a
 (struct game [grid next-player] #:transparent)
@@ -32,16 +32,19 @@
 ; A Cell is a PlayerName or #f
 ; represents who has played in a space.
 ; #f represents an empty space.
+(define (cell? v) (or (equal? #f v) (player-name? v)))
 
 ; A PlayerName is one of
 (define X 'X)
 (define O 'O)
+(define (player-name? v) (or (equal? v X) (equal? v O)))
 
 ; a Move is a Position
 ; A Position is a
 (struct position [row col] #:transparent)
 ; where row and col are 0, 1, or 2
 ; (position 0 0) is top-left
+(define move? position?)
 
 
 ; A GameStatus is one of
@@ -55,6 +58,7 @@
 (define X_WIN 'X_WIN)
 ; o wins (terminal)
 (define O_WIN 'O_WIN)
+(define game-status/c (or/c X_GO O_GO DRAW X_WIN O_WIN))
 
 (define INITIAL-GAME
   (game '((#f #f #f)
