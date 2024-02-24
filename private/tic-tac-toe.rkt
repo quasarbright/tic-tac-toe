@@ -125,9 +125,16 @@
 ; Game -> Boolean
 ; Is the game done? It is done when there are no empty spaces.
 (define (game-done? gam)
-  (for*/and ([row (game-grid gam)]
-             [cell row])
-    cell))
+  (or (game-get-winner gam)
+      (for*/and ([row (game-grid gam)]
+                 [cell row])
+        cell)))
+
+(module+ test
+  (check-not-false (game-done? (game '((X #f #f)
+                                       (#f X #f)
+                                       (#f #f X))
+                                     O))))
 
 ; Game -> (or/c Player #f)
 ; get the winner, or #f if there is none.

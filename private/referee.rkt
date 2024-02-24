@@ -27,6 +27,8 @@
              (let/ec abort
                (let loop ([gam gam] [players players])
                  (when (game-done? gam)
+                   (for ([player players])
+                     (with-protection (send player notify-end gam)))
                    (abort (list gam '())))
                  (define next-player (first players))
                  (define players^ (append (rest players) (list next-player)))
@@ -34,6 +36,7 @@
                  (define move (with-protection (send next-player get-move gam)))
                  (unless move
                    ; player failed to supply a move
+                   (displayln "player failed to supply a move")
                    (abort (list gam (list next-player))))
 
                  (define gam^ (game-make-move gam move))
