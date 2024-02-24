@@ -6,6 +6,7 @@
 (provide
  (struct-out game)
  (struct-out position)
+ move?
  X
  O
  X_GO
@@ -17,7 +18,7 @@
  position-valid?
  (contract-out
   [game-done? (-> game? any/c)]
-  [game-get-cell (-> game? position? cell?)]
+  [game-get-cell (-> game? position-valid? cell?)]
   [game-make-move (-> game? move? (or/c #f game?))]
   [game-move-is-legal? (-> game? move? any/c)]
   [game-status (-> game? game-status/c)]
@@ -44,7 +45,7 @@
 (struct position [row col] #:transparent)
 ; where row and col are 0, 1, or 2
 ; (position 0 0) is top-left
-(define move? position?)
+(define (move? v) (position-valid? v))
 
 
 ; A GameStatus is one of

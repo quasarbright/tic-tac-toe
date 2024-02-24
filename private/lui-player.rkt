@@ -2,6 +2,8 @@
 
 ;; human player via command-line
 
+(provide lui-player%)
+
 (require "./player.rkt"
          "./tic-tac-toe.rkt")
 

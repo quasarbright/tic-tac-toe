@@ -34,7 +34,7 @@
                  (define players^ (append (rest players) (list next-player)))
 
                  (define move (with-protection (send next-player get-move gam)))
-                 (unless move
+                 (unless (and move (position-valid? move))
                    ; player failed to supply a move
                    (displayln "player failed to supply a move")
                    (abort (list gam (list next-player))))
