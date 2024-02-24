@@ -12,7 +12,3 @@
     ; Game -> Void
     ; Called with the final game state when the game is over.
     notify-end))
-
-(define naive-player%
-  (class* object% (player<%>)
-    (define/public (get-move ))))

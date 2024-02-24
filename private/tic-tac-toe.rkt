@@ -21,7 +21,7 @@
   [game-make-move (-> game? move? (or/c #f game?))]
   [game-move-is-legal? (-> game? move? any/c)]
   [game-status (-> game? game-status/c)]
-  [game-get-winner (-> game (or/c #f player-name?))]))
+  [game-get-winner (-> game? (or/c #f player-name?))]))
 
 ; A Game is a
 (struct game [grid next-player] #:transparent)
@@ -108,7 +108,7 @@
     [(game grid next-player)
      (define row-cells (list-ref grid (position-row pos)))
      (define row-cells^ (list-set row-cells (position-col pos) cell))
-     (game (list-set grid (position-row pos) row-cells^))]))
+     (game (list-set grid (position-row pos) row-cells^) next-player)]))
 
 ; Game -> GameStatus
 ; Get the status of the game.
