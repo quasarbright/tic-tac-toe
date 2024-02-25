@@ -11,11 +11,14 @@
           [receive-message (->* () (input-port?) (or/c jsexpr? eof-object?))]))
 
 (define (send-message json [out (current-output-port)])
+  (displayln (format "sending message ~a" json))
   (parameterize ([current-output-port out])
     (write-json json)
     (newline)
     (flush-output)))
 
 (define (receive-message [in (current-input-port)])
-  (parameterize ([current-input-port in])
-    (read-json)))
+  (define msg (parameterize ([current-input-port in])
+                (read-json)))
+  (displayln (format "received message ~a" msg))
+  msg)

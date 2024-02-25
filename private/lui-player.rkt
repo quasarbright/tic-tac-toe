@@ -11,11 +11,11 @@
   (class* object% (player<%>)
     (super-new)
     (define/public (get-move gam)
-      (displayln "")
+      (newline)
       (display-game gam)
       (read-move))
     (define/public (notify-end gam)
-      (displayln "")
+      (newline)
       (display-game-end gam))))
 
 ; Game -> Void

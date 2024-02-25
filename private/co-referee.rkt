@@ -10,7 +10,7 @@
 (define co-referee<%>
   (interface ()
     ; protocol: play-game END
-    ; Player -> ?
+    ; Player -> Void
     play-game))
 
 (define proxy-co-referee%
@@ -19,12 +19,12 @@
     (init-field in out)
     (define/public (play-game player)
       (let loop ()
-        (send-message
-         (match (receive-message in)
-           [`("get-move" ,game-jsexpr)
-            (move->jsexpr (send player get-move (jsexpr->game game-jsexpr)))
-            (loop)]
-           [`("notify-end" ,game-jsexpr)
-            (void->jsexpr (send player notify-end (jsexpr->game game-jsexpr)))]
-           [cmd (error "unknown command ~a" cmd)])))
-      (close-input-port))))
+        (match (receive-message in)
+          [`("get-move" ,game-jsexpr)
+           (send-message (move->jsexpr (send player get-move (jsexpr->game game-jsexpr))) out)
+           (loop)]
+          [`("notify-end" ,game-jsexpr)
+           (send-message (void->jsexpr (send player notify-end (jsexpr->game game-jsexpr))) out)]
+          [(? eof-object?) (error "disconnected from game")]
+          [cmd (error "unknown command" cmd)]))
+      (close-input-port in))))

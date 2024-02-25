@@ -1,8 +1,7 @@
 #lang racket
 
 (provide server<%>
-         DEFAULT_PORT_NO
-         server%)
+         tcp-server%)
 (require "./proxy-player.rkt")
 
 (define server<%>
@@ -13,13 +12,11 @@
     ; -> Void
     close))
 
-(define DEFAULT_PORT_NO 8024)
-
-(define server%
+(define tcp-server%
   (class* object% (server<%>)
     (super-new)
-    (init-field [port-no DEFAULT_PORT_NO])
-    (define listener (tcp-listen port-no 1))
+
+    (define-values (listener port-no) (make-tcp-listener))
     (define ins '())
     (define outs '())
     (define/public (signup)
@@ -32,4 +29,14 @@
       (for ([in ins])
         (close-input-port in))
       (for ([out outs])
-        (close-output-port out)))))
+        (close-output-port out)))
+    ; -> port-number?
+    (define/public (get-port-no) port-no)))
+
+(define (make-tcp-listener)
+  (let loop ([port-no 8090])
+    (when (> port-no 9000)
+      (error 'make-tcp-listener "unable to find a good port to launch the server"))
+    (with-handlers
+      ([exn:fail:network? (lambda (_) (loop (add1 port-no)))])
+      (values (tcp-listen port-no) port-no))))
