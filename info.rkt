@@ -1,6 +1,6 @@
 #lang info
 (define collection "tic-tac-toe")
-(define deps '("base" "gui-easy" "nat-traversal"))
+(define deps '("base" "gui-easy" "nat-traversal" "sandbox-lib"))
 (define build-deps '("scribble-lib" "racket-doc" "rackunit-lib"))
 (define scribblings '(("scribblings/tic-tac-toe.scrbl" ())))
 (define pkg-desc "Online tic tac toe")
