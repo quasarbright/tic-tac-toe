@@ -37,12 +37,13 @@
                  (define move (with-protection (send next-player get-move gam)))
                  (unless (and move (position-valid? move))
                    ; player failed to supply a move
-                   (displayln "player failed to supply a move")
+                   (displayln (format "player ~a failed to supply a move" (game-next-player gam)))
                    (abort (list gam (list next-player))))
 
                  (define gam^ (game-make-move gam move))
                  (unless gam^
                    ; move was illegal
+                   (displayln (format "player ~a made an illegal move" (game-next-player gam)))
                    (abort (list gam (list next-player))))
 
                  (loop gam^ players^)))))))
@@ -105,6 +106,6 @@
     (check-equal? gam^
                   (game '((X O X)
                           (O X O)
-                          (X O X))
+                          (X #f #f))
                         O))
     (check-equal? kicked-players '())))
