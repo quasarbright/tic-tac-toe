@@ -53,6 +53,6 @@
 (module+ main
   (require "./referee.rkt")
   (define lui-player (new lui-player%))
-  (define naive-player (new naive-player%))
+  (define lui-player-2 (new lui-player%))
   (define referee (new referee%))
-  (void (send referee play-game INITIAL-GAME (list lui-player naive-player))))
+  (void (send referee play-game INITIAL-GAME (list lui-player lui-player-2))))

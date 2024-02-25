@@ -14,6 +14,7 @@
 
 (define referee<%>
   (interface ()
+    ; Protocol: play-game ...
     ; Game (listof Player) -> (values Game (listof Player))
     ; Play the game with the list of players.
     ; Return the final game state and the list of players that were kicked.

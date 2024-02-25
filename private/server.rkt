@@ -1,11 +1,13 @@
 #lang racket
 
-(provide)
+(provide server<%>
+         DEFAULT_PORT_NO
+         server%)
 (require "./proxy-player.rkt")
 
 (define server<%>
   (interface ()
-    ; protocol is signup signup ... close
+    ; protocol is signup signup ... close END
     ; -> Player
     signup
     ; -> Void

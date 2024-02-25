@@ -6,7 +6,7 @@
 
 (define player<%>
   (interface ()
-    ; protocol is get-move get-move ... notify-end
+    ; protocol is get-move get-move ... notify-end END
     ; Game -> Move
     ; Choose a move, given the current game state.
     get-move
