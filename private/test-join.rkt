@@ -3,12 +3,20 @@
 ;; testing out a basic tcp client
 
 (require racket/tcp
-         hostname)
+         net/base64
+         json)
 
-(define ip-address (first (get-ipv4-addrs #:normal? #t #:localhost? #f)))
+(display "Enter join code: ")
+(define join-token/enc (read-line))
+(define join-token
+  (string->jsexpr
+   (bytes->string/utf-8
+    (base64-decode
+     (string->bytes/utf-8 join-token/enc)))))
+(match-define (list ip-address port) join-token)
 
 (displayln "connecting to server")
-(define-values (in out) (tcp-connect ip-address 8090))
+(define-values (in out) (tcp-connect ip-address port))
 (displayln "connected to server")
 (displayln (format "Received message from server: ~a" (read in)))
 (displayln "pong" out)
