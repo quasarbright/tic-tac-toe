@@ -1,5 +1,6 @@
 #lang racket
 
+(provide join-game)
 (require "./co-referee.rkt"
          "./lui-player.rkt"
          "./join-code.rkt")
@@ -14,13 +15,19 @@
   (send co-referee play-game human-player))
 
 (define (get-decoded-join-code)
+  (define (retry)
+    (displayln "invalid join code, try again")
+    (get-decoded-join-code))
   (display "enter join code: ")
-  (define join-code (read-line))
-  (with-handlers
-    ([exn:fail? (lambda (_)
-                  (displayln "invalid join code, try again")
-                  (get-decoded-join-code))])
-    (decode-join-code join-code)))
+  (define join-code/datum (read))
+  (cond
+    [(symbol? join-code/datum)
+     (define join-code (symbol->string join-code/datum))
+     (with-handlers
+       ([exn:fail? (lambda (_) (retry))])
+       (decode-join-code join-code))]
+    [else
+     (retry)]))
 
 (module+ main
   (join-game))

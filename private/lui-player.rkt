@@ -3,9 +3,11 @@
 ;; human player via command-line
 
 (module+ test (require rackunit))
-(provide lui-player%)
+(provide lui-player%
+         run-local-lui-game)
 
-(require "./player.rkt"
+(require "./referee.rkt"
+         "./player.rkt"
          "./tic-tac-toe.rkt")
 
 (define lui-player%
@@ -14,7 +16,8 @@
     (define/public (get-move gam)
       (newline)
       (display-game gam)
-      (read-move))
+      (begin0 (read-move)
+        (displayln "waiting for opponent")))
     (define/public (notify-end gam)
       (newline)
       (display-game-end gam))))
@@ -43,7 +46,7 @@
 ; Game -> Void
 (define (display-game gam [display-turn? #t])
   (when display-turn?
-    (displayln (format "It is ~a's turn" (game-next-player gam))))
+    (displayln (format "it is ~a's turn" (game-next-player gam))))
   (displayln (game->string gam)))
 
 (define (game->string gam)
@@ -65,21 +68,22 @@
 
 ; -> Move
 (define (read-move)
-  ; TODO retry logic
   (display "enter the number of the space to make a move: ")
   (define move-datum (read))
   (match move-datum
     [(and n (? (lambda (v) (and (natural? v) (<= 1 v 9)))))
      (numpad->position n)]
     [_
-     (displayln "Invalid move, try again.")
+     (displayln "invalid move, try again")
      (read-move)]))
 
-(module+ main
-  (require "./referee.rkt")
+(define (run-local-lui-game)
   (define lui-player (new lui-player%))
   (define lui-player-2 (new lui-player%))
   (define referee (new referee%))
   (call-with-values
    (lambda () (send referee play-game INITIAL-GAME (list lui-player lui-player-2)))
    void))
+
+(module+ main
+  (run-local-lui-game))

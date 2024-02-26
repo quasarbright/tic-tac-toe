@@ -2,5 +2,7 @@
 
 ;; an online peer-to-peer tic-tac-toe game
 
-(module+ test
-  (require rackunit))
+(require "./private/lui-menu.rkt")
+
+(module+ main
+  (run-lui-menu))

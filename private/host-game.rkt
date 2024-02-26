@@ -3,6 +3,7 @@
 ;; Host a game server, allowing another player to remotely join.
 ;; Runs a command line player on this computer
 
+(provide host-game)
 (require nat-traversal
          "./server.rkt"
          "./referee.rkt"

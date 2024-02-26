@@ -25,6 +25,9 @@
            (loop)]
           [`("notify-end" ,game-jsexpr)
            (send-message (void->jsexpr (send player notify-end (jsexpr->game game-jsexpr))) out)]
-          [(? eof-object?) (error "disconnected from game")]
+          [(? eof-object?) (displayln "disconnected from game")]
           [cmd (error "unknown command" cmd)]))
-      (close-input-port in))))
+      (unless (port-closed? in)
+        (close-input-port in))
+      (unless (port-closed? out)
+        (close-output-port out)))))
