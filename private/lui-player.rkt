@@ -2,6 +2,7 @@
 
 ;; human player via command-line
 
+(module+ test (require rackunit))
 (provide lui-player%)
 
 (require "./player.rkt"
@@ -18,15 +19,41 @@
       (newline)
       (display-game-end gam))))
 
+(define numpad-positions
+  (list (position 2 0) (position 2 1) (position 2 2)
+        (position 1 0) (position 1 1) (position 1 2)
+        (position 0 0) (position 0 1) (position 0 2)))
+
+; a NumpadNumber is an integer between 1 and 9 inclusive
+
+; NumpadNumber -> Position
+(define (numpad->position n)
+  (list-ref numpad-positions (sub1 n)))
+
+; Position -> NumpadNumber
+(define (position->numpad pos)
+  (add1 (index-of numpad-positions pos)))
+
+(module+ test
+  (check-equal? (numpad->position 7)
+                (position 0 0))
+  (check-equal? (position->numpad (position 2 2))
+                3))
+
 ; Game -> Void
 (define (display-game gam [display-turn? #t])
   (when display-turn?
     (displayln (format "It is ~a's turn" (game-next-player gam))))
-  (for ([row '(0 1 2)])
-    (for ([col '(0 1 2)])
-      (define cell (game-get-cell gam (position row col)))
-      (display (or cell "-")))
-    (displayln "")))
+  (displayln (game->string gam)))
+
+(define (game->string gam)
+  (string-join (for/list ([row '(0 1 2)])
+                 (apply format
+                        " ~a │ ~a │ ~a "
+                         (for/list ([col '(0 1 2)])
+                           (define cell (game-get-cell gam (position row col)))
+                           (or cell (position->numpad (position row col))))))
+               "\n───┼───┼───\n"))
 
 (define (display-game-end gam)
   (define winner (game-get-winner gam))
@@ -39,20 +66,20 @@
 ; -> Move
 (define (read-move)
   ; TODO retry logic
-  (display "Enter a move as two numbers in parentheses, like (0 0) for top-left: ")
+  (display "enter the number of the space to make a move: ")
   (define move-datum (read))
   (match move-datum
-    [(list (and row (? valid-coord?)) (and col (? valid-coord?)))
-     (position row col)]
+    [(and n (? (lambda (v) (and (natural? v) (<= 1 v 9)))))
+     (numpad->position n)]
     [_
      (displayln "Invalid move, try again.")
      (read-move)]))
-
-(define (valid-coord? v) (and (natural? v) (<= 0 v 2)))
 
 (module+ main
   (require "./referee.rkt")
   (define lui-player (new lui-player%))
   (define lui-player-2 (new lui-player%))
   (define referee (new referee%))
-  (void (send referee play-game INITIAL-GAME (list lui-player lui-player-2))))
+  (call-with-values
+   (lambda () (send referee play-game INITIAL-GAME (list lui-player lui-player-2)))
+   void))
