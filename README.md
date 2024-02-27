@@ -2,11 +2,18 @@ tic-tac-toe
 ===========
 online tic tac toe
 
+System requirements:
+* If you want to host a game directly from your computer, you must have [`ngrok`](https://ngrok.com) installed and configured.
+
+Install:
+
+TODO make release and link to it
+
 ## Building from source
 
 Requirements:
 
-* [Racket](https://racket-lang.org/). tested on version 8.9
+* [Racket](https://racket-lang.org/). tested on version 8.9 and 8.7
 * `raco` pacakge manager (comes with Racket)
 
 First, clone the repository
@@ -17,13 +24,18 @@ Then install the package by navigating to the repository root and running
 raco pkg install
 ```
 
-To create an executable,
-
-On windows:
+You can run the program with
 
 ``` sh
-raco exe --ico icons/icon.ico -o tic-tac-toe.exe main.rkt
+racket main.rkt
 ```
 
-This will create `tic-tac-toe.exe` at the repository root.
+To create an executable, navigate to the repository root and run
+
+``` sh
+raco exe --ico icons/icon.ico --icns icons/icon.icns --embed-dlls -o exe/tic-tac-toe main.rkt
+raco distribute dist exe/*
+```
+
+This will create an executable in the `dist/` directory. On windows, it will be a standalone exe file. On macos, it will be a `bin/` directory with the executable inside, and a `lib/` directory containing the libraries needed to run the executable.
 

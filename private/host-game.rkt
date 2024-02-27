@@ -9,16 +9,23 @@
          "./referee.rkt"
          "./lui-player.rkt"
          "./tic-tac-toe.rkt"
-         "./join-code.rkt")
+         "./join-code.rkt"
+         "./ngrok.rkt")
 
+; -> Void
+; host a game from this computer, allowing another player to remotely join.
 (define (host-game)
   (displayln "launching server")
   (define server (new tcp-server%))
-  (define ip-address (get-ip-address))
-  (define port-no (send server get-port-no))
-  (displayln (format "server running at port ~a" port-no))
-
-  (define join-code (make-join-code ip-address port-no))
+  (define private-port-no (send server get-port-no))
+  (define-values
+    (public-address public-port-no)
+    (launch-ngrok-server private-port-no))
+  (displayln (format "public server running at ~a:~a and this machine's port ~a"
+                     public-address
+                     public-port-no
+                     private-port-no))
+  (define join-code (make-join-code public-address public-port-no))
   (displayln (format "join code: ~a" join-code))
   (displayln "waiting for another player to join")
   (define remote-player (send server signup))

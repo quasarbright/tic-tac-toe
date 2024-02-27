@@ -6,3 +6,5 @@ compiled/
 /doc/
 *.exe
 *.app
+exe/
+dist/
