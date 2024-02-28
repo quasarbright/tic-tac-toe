@@ -1,10 +1,9 @@
 #lang racket
 
-;; human player via GUI
+;; human player via GUI. currently broken
 
 (require racket/gui/easy
          racket/gui/easy/operator
-         racket/async-channel
          "./player.rkt"
          "./tic-tac-toe.rkt")
 
@@ -12,7 +11,7 @@
   (class* object% (player<%>)
     (super-new)
     (define @gam (@ #f))
-    (define move-chan (make-async-channel))
+    (define move #f)
     (define @your-turn? (@ #f))
     (obs-observe! @gam (lambda (gam) (displayln gam)))
     (define (render-game gam your-turn?)
@@ -27,7 +26,7 @@
                             (define pos (position row col))
                             (define cell (game-get-cell gam pos))
                             (button (symbol->string (or cell (game-next-player gam)))
-                                    (lambda () (async-channel-put move-chan pos))
+                                    (lambda () (set! move pos))
                                     #:enabled? (and your-turn? (not cell)))))))
           (text "waiting for game to start")))
     (render
@@ -45,10 +44,13 @@
     (define/public (get-move gam)
       (obs-set! @gam gam)
       (obs-set! @your-turn? #t)
-      (async-channel-get move-chan))
+      (let loop ()
+        (if move
+            (begin0 move (set! move #f))
+            (begin (sleep 1) (loop)))))
     (define/public (notify-end _) (void))))
 
-#;(module+ main
+(module+ main
   (require "./referee.rkt")
   (define gui-player (new gui-player%))
   (define naive-player (new naive-player%))
