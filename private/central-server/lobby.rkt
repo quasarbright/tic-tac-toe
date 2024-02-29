@@ -2,7 +2,8 @@
 
 (provide lobby<%>
          lobby%)
-(require racket/random)
+(require racket/random
+         "./thread-safe-list.rkt")
 
 ; where users connect with each other to play a game together
 ; a host creates a lobby, then other users join, then the host
@@ -31,16 +32,21 @@
      referee)
 
     (define id (random-id))
-    (define clients (list host))
+    (define clients (make-tslist (list host)))
+    (define (get-clients) (tslist-get-items clients))
 
     (define/public (get-id) id)
 
     (define/public (add-client! client)
       (unless (member client clients)
-        (set! clients (cons client clients))))
+        (tslist-add! clients client)))
 
     (define/public (remove-client! client)
-      (set! clients (remove client clients)))
+      (tslist-remove! clients client)
+      (when (equal? client host)
+        (for ([client (get-clients)])
+          ; TODO notify client of disconnect
+          (remove-client! client))))
 
     (define/public (start-game!)
       (send referee play-game (for/list ([client clients])

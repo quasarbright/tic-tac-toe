@@ -5,13 +5,20 @@
 ; update operations block until they are processed and completed.
 ; inspired by actor model.
 
+; TODO implement a more general "atom" construct
+; which is any value that you can concurrently modify
+; and read, and make this a thin wrapper around it
+
+(module+ test (require rackunit))
 (provide tslist?
          (contract-out
           ; TODO higher order contract with element contract
           [make-tslist (-> (listof any/c) tslist?)]
           [tslist-add! (-> any/c tslist? void?)]
           [tslist-remove! (-> any/c tslist? void?)]
-          [tslist-get-items (-> tslist? (listof any/c))]))
+          [tslist-get-items (-> tslist? (listof any/c))]
+          ; alias of tslist-get-items
+          [tslist->list (-> tslist? (listof any/c))]))
 
 (require racket/async-channel)
 
@@ -27,13 +34,14 @@
 
 (define (make-tslist [lst '()])
   (define chan (make-async-channel))
+  ; TODO i don't think this can get garbage-collected
   (define tsl
     (tslist lst
             (thread
              (lambda ()
                (let loop ()
                  ; assumes this never errors.
-                 (match (async-channel-get)
+                 (match (async-channel-get chan)
                    ; accepts messages of the form
                    ; (list (-> (listof any) (listof any)) (-> any any))
                    ; where f is the modification to the list and
@@ -68,6 +76,10 @@
 (define (tslist-get-items tsl)
   (tslist-lst tsl))
 
+; alias for tslist-get-items
+(define (tslist->list tsl)
+  (tslist-get-items tsl))
+
 ; runs body, which kicks off some async process
 ; which will call k exactly once with its result.
 ; blocks until k is called.
@@ -80,3 +92,17 @@
       body
       ...
       (channel-get result-chan))))
+
+(module+ test
+  ; ensure concurrent updates are all processed properly
+  ; this would fail with normal lists
+  (define tsl (make-tslist))
+  (define N 1000)
+  (for/async ([n (in-range N)])
+    (tslist-add! tsl n))
+  (check-equal? (length (tslist->list tsl))
+                N)
+  (for/async ([n (in-range N)])
+    (tslist-remove! tsl n))
+  (check-equal? (length (tslist->list tsl))
+                0))

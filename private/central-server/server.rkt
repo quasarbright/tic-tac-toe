@@ -24,10 +24,13 @@
     (super-new)
     (define listener (tcp-listen 8090))
     (displayln "running local server at port 8090")
+
     (define clients (make-tslist))
     (define (add-client! client) (tslist-add! clients client))
     (define lobbies (make-tslist))
     (define (add-lobby! lobby) (tslist-add! lobby lobbies))
+    (define (get-lobbies) (tslist-get-items lobbies))
+
     (define thd
       (thread
        (lambda ()
@@ -43,4 +46,9 @@
       (add-lobby!
        (new lobby%
             [host host]
-            [referee (new referee%)])))))
+            [referee (new referee%)])))
+
+    (define/public (get-lobby client lobby-id)
+      (define lobbies (get-lobbies))
+      (findf (lambda (lobby) (equal? lobby-id (send lobby get-id)))
+             lobbies))))
