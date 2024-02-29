@@ -15,15 +15,18 @@
 (define referee<%>
   (interface ()
     ; Protocol: play-game ...
-    ; Game (listof Player) -> (values Game (listof Player))
+    ; (listof Player) [Game] -> (values Game (listof Player))
     ; Play the game with the list of players.
+    ; Optionally accepts a starting game state.
     ; Return the final game state and the list of players that were kicked.
     play-game))
 
 (define referee%
   (class* object% (referee<%>)
     (super-new)
-    (define/public (play-game gam players)
+    (define/public (play-game players [gam INITIAL-GAME])
+      (unless (= 2 (length players))
+        (error 'play-game "tic-tac-toe must be played with 2 players"))
       (apply values
              (let/ec abort
                (let loop ([gam gam] [players players])
@@ -88,21 +91,21 @@
 (module+ test
   (define ref (new referee%))
   (define second-top-left-player (new top-left-player%))
-  (let-values ([(gam^ kicked-players) (send ref play-game INITIAL-GAME (list top-left-player second-top-left-player))])
+  (let-values ([(gam^ kicked-players) (send ref play-game (list top-left-player second-top-left-player))])
     (check-equal? gam^
                   (game '((X  #f #f)
                           (#f #f #f)
                           (#f #f #f))
                         O))
     (check-equal? kicked-players (list second-top-left-player)))
-  (let-values ([(gam^ kicked-players) (send ref play-game INITIAL-GAME (list top-left-player broken-player))])
+  (let-values ([(gam^ kicked-players) (send ref play-game (list top-left-player broken-player))])
     (check-equal? gam^
                   (game '((X  #f #f)
                           (#f #f #f)
                           (#f #f #f))
                         O))
     (check-equal? kicked-players (list broken-player)))
-  (let-values ([(gam^ kicked-players) (send ref play-game INITIAL-GAME (list naive-player naive-player))])
+  (let-values ([(gam^ kicked-players) (send ref play-game (list naive-player naive-player))])
     (check-equal? gam^
                   (game '((X O X)
                           (O X O)

@@ -55,4 +55,4 @@
   (define gui-player (new gui-player%))
   (define naive-player (new naive-player%))
   (define referee (new referee%))
-  (send referee play-game INITIAL-GAME (list gui-player naive-player)))
+  (send referee play-game (list gui-player naive-player)))

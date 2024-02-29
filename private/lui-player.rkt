@@ -82,7 +82,7 @@
   (define lui-player-2 (new lui-player%))
   (define referee (new referee%))
   (call-with-values
-   (lambda () (send referee play-game INITIAL-GAME (list lui-player lui-player-2)))
+   (lambda () (send referee play-game (list lui-player lui-player-2)))
    void))
 
 (module+ main

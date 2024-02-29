@@ -33,7 +33,7 @@
 
   (define human-player (new lui-player%))
   (define referee (new referee%))
-  (send referee play-game INITIAL-GAME (list human-player remote-player))
+  (send referee play-game (list human-player remote-player))
   (send server close))
 
 ; -> string?

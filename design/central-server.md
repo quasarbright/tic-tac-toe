@@ -71,6 +71,8 @@ central loop:
 maybe use actors! esp with a global lobby store.
 but actors don't work very well with request and response. could try to make an extension of actors that does though.
 
+i wonder how racket handles concurrent method calls. i'd be worried about concurrent list mutations, but other stuff should be fine.
+
 need some way of propagating disconnects?
 
 data model for server side:
