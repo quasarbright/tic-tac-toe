@@ -1,5 +1,6 @@
 #lang racket
 
+(module+ test (require rackunit))
 (provide lobby<%>
          lobby%)
 (require racket/random
@@ -38,19 +39,29 @@
     (define/public (get-id) id)
 
     (define/public (add-client! client)
-      (unless (member client clients)
+      (unless (member client (tslist->list clients))
         (tslist-add! clients client)))
 
     (define/public (remove-client! client)
       (tslist-remove! clients client)
       (when (equal? client host)
-        (for ([client (get-clients)])
-          ; TODO notify client of disconnect
-          (remove-client! client))))
+        (define clients-list (tslist->list clients))
+        (match clients-list
+          [(cons client _)
+           ; TODO notify host migration
+           (set! host client)]
+          [_
+           (set! host #f)
+           ; TODO shut down empty lobby, remove from server
+           (void)])))
 
-    (define/public (start-game!)
-      (send referee play-game (for/list ([client clients])
-                                (send client get-player))))))
+    (define/public (start-game! client)
+      (when (equal? client host)
+        ; TODO error if not host?
+        (define players
+          (for/list ([client (tslist->list clients)])
+            (send client get-player)))
+        (send referee play-game players)))))
 
 (define alphabet "abcdefghijklmnopqrstuvqxyz")
 

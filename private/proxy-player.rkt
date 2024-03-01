@@ -10,7 +10,7 @@
          "./communication.rkt"
          (for-syntax syntax/parse))
 
-(define proxy-player-simple%
+(define proxy-player%
   (class* object% (player<%>)
     (super-new)
     (init-field
@@ -28,15 +28,6 @@
              (jsexpr->ret (receive-message in)))]))
     (define/remote get-move (game->jsexpr) jsexpr->move)
     (define/remote notify-end (game->jsexpr) jsexpr->void)))
-
-(define proxy-player%
-  (class* proxy-player-simple% (player<%>)
-    (super-new)
-    (inherit-field in out)
-    (define/override (notify-end gam)
-      (super notify-end gam)
-      (close-input-port in)
-      (close-output-port out))))
 
 (module+ test
   (require json

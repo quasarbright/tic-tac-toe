@@ -13,9 +13,9 @@
 (provide tslist?
          (contract-out
           ; TODO higher order contract with element contract
-          [make-tslist (-> (listof any/c) tslist?)]
-          [tslist-add! (-> any/c tslist? void?)]
-          [tslist-remove! (-> any/c tslist? void?)]
+          [make-tslist (->* () ((listof any/c)) tslist?)]
+          [tslist-add! (-> tslist? any/c void?)]
+          [tslist-remove! (-> tslist? any/c void?)]
           [tslist-get-items (-> tslist? (listof any/c))]
           ; alias of tslist-get-items
           [tslist->list (-> tslist? (listof any/c))]))
@@ -57,7 +57,7 @@
 (define (tslist-add! tsl v)
   (with-async k
     (async-channel-put (tslist-chan tsl)
-                       (list (lambda (lst) (cons v lst))
+                       (list (lambda (lst) (append lst (list v)))
                              k))))
 
 ; TSList Any -> Void

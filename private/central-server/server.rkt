@@ -27,9 +27,10 @@
 
     (define clients (make-tslist))
     (define (add-client! client) (tslist-add! clients client))
+    (define (get-cients) (tslist->list clients))
     (define lobbies (make-tslist))
-    (define (add-lobby! lobby) (tslist-add! lobby lobbies))
-    (define (get-lobbies) (tslist-get-items lobbies))
+    (define (add-lobby! lobby) (tslist-add! lobbies lobby))
+    (define (get-lobbies) (tslist->list lobbies))
 
     (define thd
       (thread
@@ -43,12 +44,25 @@
                  [server this]))))))
 
     (define/public (create-lobby! host)
-      (add-lobby!
-       (new lobby%
-            [host host]
-            [referee (new referee%)])))
+      (define lobby
+        (new lobby%
+             [host host]
+             [referee (new referee%)]))
+      (add-lobby! lobby)
+      lobby)
 
     (define/public (get-lobby client lobby-id)
       (define lobbies (get-lobbies))
       (findf (lambda (lobby) (equal? lobby-id (send lobby get-id)))
-             lobbies))))
+             lobbies))
+
+    ; for testing only
+    ; TODO figure out a way to make this more private
+    (define/public (add-client!/testing client)
+      (add-client! client))
+
+    (define/public (close)
+      (tcp-close listener)
+      (kill-thread thd)
+      (for ([client (tslist->list clients)])
+        (send client close)))))
