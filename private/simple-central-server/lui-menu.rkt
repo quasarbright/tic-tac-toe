@@ -23,8 +23,8 @@
       [_ (displayln "invalid input. please enter 1, 2, 3, or q")
          (go)]))
 
-(define hostname "localhost")
-(define port-no 8090)
+(define hostname "b-contents.gl.at.ply.gg")
+(define port-no 48958)
 
 (define (host-game/lui)
   (host-game hostname port-no (new lui-player%)))
