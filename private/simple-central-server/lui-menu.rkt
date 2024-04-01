@@ -1,6 +1,9 @@
 #lang racket
 
-(provide run-lui-menu)
+(provide
+ (rename-out
+  [host-game/lui host-central-game]
+  [join-game/lui join-central-game]))
 (require "./client.rkt"
          "../lui-player.rkt")
 
@@ -30,7 +33,7 @@
   (host-game hostname port-no (new lui-player%)))
 
 (define (join-game/lui)
-  (displayln "Enter game ID: ")
+  (display "enter game ID: ")
   (define game-id (symbol->string (read)))
   (join-game hostname port-no game-id (new lui-player%)))
 

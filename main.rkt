@@ -1,6 +1,6 @@
 #lang racket
 
-;; an online peer-to-peer tic-tac-toe game
+;; an online tic-tac-toe game featuring peer-to-peer and a central game server.
 
 (require "./private/lui-menu.rkt")
 

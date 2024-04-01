@@ -3,7 +3,7 @@ tic-tac-toe
 online tic tac toe
 
 System requirements:
-* If you want to host a game directly from your computer, you must have [`ngrok`](https://ngrok.com) installed and configured.
+* If you want to host a peer-to-peer game directly from your computer, you must have [`ngrok`](https://ngrok.com) installed and configured.
 
 Install:
 
@@ -39,3 +39,22 @@ raco distribute dist exe/*
 
 This will create an executable in the `dist/` directory. On windows, it will be a standalone exe file. On macos, it will be a `bin/` directory with the executable inside, and a `lib/` directory containing the libraries needed to run the executable.
 
+
+## Running the central server
+
+run playit.gg.
+
+navigate to the repository root and run
+
+``` sh
+cd private/simple-game-server
+racket server.rkt
+```
+
+The public hostname and port number are currently hard-coded in `private/simple-game-server/lui-menu.rkt`.
+
+The private port number is hard-coded in `private/simple-game-server/server.rkt`.
+
+You can view your playit.gg the tunnels here: https://playit.gg/account/tunnels
+
+If you're not me and you want to get your own central server working, you'll have to change the hard-coded public hostname and port number to those in your playit.gg.

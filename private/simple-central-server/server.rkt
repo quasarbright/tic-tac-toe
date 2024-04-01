@@ -109,12 +109,8 @@
 
 ; -> (values tcp-listener? listen-port-number?)
 (define (make-tcp-listener)
-  (let loop ([port-no 8090])
-    (when (> port-no 9000)
-      (error 'make-tcp-listener "unable to find a good port to launch the server"))
-    (with-handlers
-      ([exn:fail:network? (lambda (_) (loop (add1 port-no)))])
-      (values (tcp-listen port-no) port-no))))
+  ; have to use 8090 bc of playit.gg
+  (values (tcp-listen 8090) 8090))
 
 (define (run-server)
   (define server (new server%))
