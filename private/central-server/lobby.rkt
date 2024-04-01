@@ -39,6 +39,7 @@
     (define/public (get-id) id)
 
     (define/public (add-client! client)
+      ; TODO notify existing clients
       (unless (member client (tslist->list clients))
         (tslist-add! clients client)))
 
