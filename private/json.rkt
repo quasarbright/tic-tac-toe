@@ -9,7 +9,9 @@
   [move->jsexpr (-> move? jsexpr?)]
   [jsexpr->void (-> jsexpr? void?)]
   [void->jsexpr (-> void? jsexpr?)]
-  [method-call->jsexpr (->* (string?) #:rest (listof jsexpr?) jsexpr?)]))
+  [method-call->jsexpr (->* (string?) #:rest (listof jsexpr?) jsexpr?)]
+  [boolean->jsexpr (-> any/c jsexpr?)]
+  [jsexpr->boolean (-> jsexpr? boolean?)]))
 (require "./tic-tac-toe.rkt")
 
 ; Game -> JSExpr
@@ -69,3 +71,12 @@
 ; String JSExpr ... -> JSExpr
 (define (method-call->jsexpr method-name . args)
   (cons method-name args))
+
+; Any -> JSExpr
+(define (boolean->jsexpr bool)
+  (not (not bool)))
+
+; JSExpr -> Boolean
+(define (jsexpr->boolean js)
+  (unless (boolean? js) (error 'jsexpr->boolean "expected a boolean"))
+  js)

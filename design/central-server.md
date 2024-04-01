@@ -219,3 +219,18 @@ notice that there is not a one-to-one correspondence between method calls on cli
 some other complications:
 * previously, the server drove all communication and clients were send requests and responded. when the client screwed up, we'd just kick them. but now, clients can send requests to the server/lobby. so if someone tries to join a lobby and the lobby is full or something, we have to send an error response back to the client or something like that. should have some standard protocol, like responses have a status and either a body or an error message.
 
+
+now client side:
+
+local client:
+* implements `client<%>`
+* communicates with user directly
+* communicates with server through proxy-server
+* communicates with co-server through method calls
+
+proxy-server:
+* implements `server<%>`? yes
+* connects to and communicates with server via tcp
+* communicates with client through method calls
+
+going to need a client-side lobby too, similar to the proxy server
